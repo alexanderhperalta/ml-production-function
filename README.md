@@ -17,9 +17,9 @@ To replicate the analysis, execute the notebooks in the following strict order. 
    - Process: Converts monthly economic data to quarterly averages and merges them with the annual financial datasets.
    - Output: Prepares the base merged datasets for alignment.
 2. Column Alignment.ipynb
-  - Input: Merged Annual and Quarterly financial sheets.
-  - Process: Standardizes variable names across datasets, ensuring that columns in the quarterly data match the annual data features. Drops unnecessary index columns.
-  - Output: Quarterly Financial Data (No Extra Columns).xlsx and Annual Financial Data (No Extra Columns).xlsx.
+    - Input: Merged Annual and Quarterly financial sheets.
+    - Process: Standardizes variable names across datasets, ensuring that columns in the quarterly data match the annual data features. Drops unnecessary index columns.
+    - Output: Quarterly Financial Data (No Extra Columns).xlsx and Annual Financial Data (No Extra Columns).xlsx.
 3. Data Understanding & Estimating Employees.ipynb
   - Input: Aligned financial data.
   - Process:
