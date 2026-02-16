@@ -21,16 +21,16 @@ To replicate the analysis, execute the notebooks in the following strict order. 
     - Process: Standardizes variable names across datasets, ensuring that columns in the quarterly data match the annual data features. Drops unnecessary index columns.
     - Output: Quarterly Financial Data (No Extra Columns).xlsx and Annual Financial Data (No Extra Columns).xlsx.
 3. Data Understanding & Estimating Employees.ipynb
-  - Input: Aligned financial data.
-  - Process:
-    - Utilizes custom modules (py_modules) to clean data and visualize distributions.
-    - Trains a Random Forest Classifier (or similar model) on annual data to learn the relationship between financial variables and employment levels.
-    - Imputes missing employee counts for the quarterly dataset.Output: Quarterly Data (with Employees).xlsx.
+    - Input: Aligned financial data.
+    - Process:
+      - Utilizes custom modules (py_modules) to clean data and visualize distributions.
+      - Trains a Random Forest Classifier (or similar model) on annual data to learn the relationship between financial variables and employment levels.
+      - Imputes missing employee counts for the quarterly dataset.Output: Quarterly Data (with Employees).xlsx.
 4. Estimating Capital.ipynb
-  - Input: Quarterly data with imputed employees.
-  - Process:Estimates the production function parameters ($\beta_l$ for labor, $\beta_k$ for capital).
-  - Calculates Total Factor Productivity (TFP) residuals (TFP_hat).
-  - Output: Final dataset with estimated capital stocks and productivity measures.
+    - Input: Quarterly data with imputed employees.
+    - Process:Estimates the production function parameters ($\beta_l$ for labor, $\beta_k$ for capital).
+    - Calculates Total Factor Productivity (TFP) residuals (TFP_hat).
+    - Output: Final dataset with estimated capital stocks and productivity measures.
 
 ## Requirements
 - Python 3.x
