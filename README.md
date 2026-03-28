@@ -20,8 +20,9 @@ To replicate the analysis, execute the notebooks in the following strict order. 
       - Imputes missing employee counts for the quarterly dataset.Output: Quarterly Data (with Employees).xlsx.
 2. Estimating Capital.ipynb
     - Input: Quarterly data with imputed employees.
-    - Process:Estimates the production function parameters ($\beta_l$ for labor, $\beta_k$ for capital).
-    - Calculates Total Factor Productivity (TFP) residuals (TFP_hat).
+    - Process:
+        - Estimates the production function parameters ($\beta_l$ for labor, $\beta_k$ for capital).
+        - Calculates Total Factor Productivity (TFP) residuals (TFP_hat).
     - Output: Final dataset with estimated capital stocks and productivity measures.
 
 ## Requirements
