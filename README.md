@@ -12,7 +12,7 @@ Due to licensing restrictions, the raw financial data files (`Annual Financial D
 
 ## Methodology
 
-### Stage 1 — Imputing Quarterly Employment (`1_estimating_employees.ipynb`)
+### Stage 1: Imputing Quarterly Employment (`1_estimating_employees.ipynb`)
 
 Quarterly filings do not include employee counts. This notebook trains a model on annual data (where headcounts are reported) and uses it to predict quarterly employment from financial ratios.
 
@@ -32,7 +32,7 @@ A secondary Random Forest classifier is trained to distinguish annual training o
 
 **Output**: `Quarterly Data (with Employees).xlsx`, containing firm identifiers, fiscal quarter/year, production function variables (Revenue, PP&E, Inventories, Working Capital, R&D, Intangibles, Depreciation, Raw Materials, COGS), predicted employee counts with upper and lower conformal bounds, and the engineered financial ratios.
 
-### Stage 2 — Estimating Capital and TFP (`2_estimating_capital.ipynb`)
+### Stage 2: Estimating Capital and TFP (`2_estimating_capital.ipynb`)
 
 This notebook constructs capital stock measures and estimates production function parameters using multiple econometric approaches.
 
