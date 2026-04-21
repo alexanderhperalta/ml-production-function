@@ -1,0 +1,11 @@
+pandas
+openpyxl
+numpy
+scipy
+xgboost
+Scikit-learn
+quantile-forest
+matplotlib
+statsmodels
+linearmodels
+seaborn

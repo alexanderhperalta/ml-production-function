@@ -1,0 +1,9 @@
+# Folders 
+/Project (Old)
+/data
+/output
+/venv
+/py_modules/__pycache__
+/research
+
+__init__.py
