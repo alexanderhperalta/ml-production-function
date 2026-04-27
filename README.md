@@ -18,11 +18,11 @@ Quarterly filings do not include employee counts. This notebook trains a model o
 
 **Data Preparation**
 
-The notebook loads annual and quarterly Compustat data, drops macroeconomic indicators (Fed Funds rate, PPI, unemployment, etc.) that risk introducing drift between training and inference distributions, and filters columns with excessive missing values (>50% for annual, >10% for quarterly). It then engineers 15 financial ratios using an `LTMFinancialProcessor` module that applies last-twelve-months rolling logic to quarterly flow variables and standard snapshot logic to annual data. Key features include Log Assets, Log Revenue, SGA Intensity, COGS Efficiency, Depreciation Intensity, leverage ratios (Debt-to-Equity, Equity Multiplier, Debt Ratio), Current Ratio, Inventory Intensity, Cash Coverage, Intangibles Ratio, Receivables Intensity, and Accrual Ratio.
+The notebook loads annual and quarterly Compustat data and filters columns with excessive missing values (>50% for annual, >10% for quarterly). It then engineers 15 financial ratios using an `LTMFinancialProcessor` module that applies last-twelve-months rolling logic to quarterly flow variables and standard snapshot logic to annual data. Key features include Log Assets, Log Value-Added, SGA Intensity, COGS Efficiency, Depreciation Intensity, leverage ratios (Debt-to-Equity, Equity Multiplier, Debt Ratio), Current Ratio, Inventory Intensity, Cash Coverage, Intangibles Ratio, Receivables Intensity, and Accrual Ratio.
 
 **Distribution Alignment & Adversarial Validation**
 
-Before training, the notebook validates that the annual (training) and quarterly (inference) distributions are comparable. It computes Jensen-Shannon divergence across all shared features to flag drift, then runs XGBoost adversarial validation. An initial AUC of 1.0 on the raw features confirms that the original variables are distinguishable across frequencies, motivating the switch to engineered ratios. After feature engineering, the adversarial AUC drops to approximately 0.54 — near chance — indicating the ratio-based feature space is well-aligned between annual and quarterly data.
+Before training, the notebook validates that the annual (training) and quarterly (inference) distributions are comparable. It computes Jensen-Shannon divergence across all shared features to flag drift, then runs XGBoost adversarial validation. An initial AUC of 1.0 on the raw features confirms that the original variables are distinguishable across frequencies, motivating the switch to engineered ratios. After feature engineering, the adversarial AUC drops to approximately 0.54 (near chance) indicating the ratio-based feature space is well-aligned between annual and quarterly data.
 
 **Quantile Regression Forest with Conformal Prediction Intervals**
 
@@ -30,7 +30,7 @@ The target variable is log-transformed employee counts (`Log_Employees`). The da
 
 A secondary Random Forest classifier is trained to distinguish annual training observations from quarterly inference observations, achieving approximately 63% accuracy — further confirming reasonable distributional overlap.
 
-**Output**: `Quarterly Data (with Employees).xlsx`, containing firm identifiers, fiscal quarter/year, production function variables (Revenue, PP&E, Inventories, Working Capital, R&D, Intangibles, Depreciation, Raw Materials, COGS), predicted employee counts with upper and lower conformal bounds, and the engineered financial ratios.
+**Output**: `Quarterly Data (with Employees).xlsx`, containing firm identifiers, fiscal quarter/year, production function variables (Value-Added, PP&E, Inventories, Working Capital, R&D, Intangibles, Depreciation, Raw Materials, COGS), predicted employee counts with upper and lower conformal bounds, and the engineered financial ratios.
 
 ### Stage 2: Estimating Capital and TFP (`2_estimating_capital.ipynb`)
 
@@ -42,7 +42,7 @@ Two capital measures are constructed from the quarterly data. Capital Measure 1 
 
 **OLS Baseline**
 
-Pooled OLS regressions of log Revenue on log Capital and log Employment yield R-squared values of approximately 0.94 for both capital measures. Breusch-Pagan and White tests reject homoscedasticity, and a variance decomposition shows 89% of revenue variation is between firms versus 11% within, confirming the need for panel methods.
+Pooled OLS regressions of log Value-Added on log Capital and log Employment yield R-squared values of approximately 0.94 for both capital measures. Breusch-Pagan and White tests reject homoscedasticity, and a variance decomposition shows 89% of value-added variation is between firms versus 11% within, confirming the need for panel methods.
 
 **Fixed Effects Panel Models**
 
@@ -50,13 +50,13 @@ Entity fixed-effects models with time dummies are estimated using `linearmodels.
 
 **Olley-Pakes (OP) Estimation**
 
-The OP procedure addresses simultaneity bias (firms observe productivity before choosing inputs). Stage 1 estimates a partially linear model using a third-degree polynomial in capital, investment (Capital Expenditure), and a time trend as a control function, recovering the labor coefficient and fitted values of the composite term φ. A Probit model estimates firm survival probabilities from the polynomial in investment and capital. Stage 2 uses nonlinear least squares to recover the capital coefficient by minimizing the sum of squared residuals from the production function, conditioning on the survival probability and the nonparametric productivity process. A robustness check following OP Section 4.1 confirms the invertibility assumption by testing whether lagged labor enters the investment equation (the estimated coefficient is near zero).
+The OP procedure addresses simultaneity bias (firms observe productivity before choosing inputs). Stage 1 estimates a partially linear model using a third-degree polynomial in capital, investment (Capital Expenditure), and a time trend as a control function, recovering the labor coefficient and fitted values of the composite term $\phi$. A Probit model estimates firm survival probabilities from the polynomial in investment and capital. Stage 2 uses nonlinear least squares to recover the capital coefficient by minimizing the sum of squared residuals from the production function, conditioning on the survival probability and the nonparametric productivity process. A robustness check following OP Section 4.1 confirms the invertibility assumption by testing whether lagged labor enters the investment equation (the estimated coefficient is near zero).
 
 **Ackerberg-Caves-Frazer (ACF) Estimation**
 
-The ACF procedure addresses the collinearity critique of OP/LP methods, where labor may be perfectly predicted by the control function in the first stage. Stage 1 runs OLS of log Revenue on a third-degree polynomial in capital, labor, materials (Cost of Goods Sold), and time to recover fitted φ values. Stage 2 estimates (β_k, β_l) jointly via GMM, using the moment conditions that the productivity innovation is orthogonal to capital (predetermined) and lagged labor (decided before the innovation). The productivity process is modeled as AR(1), and the autoregressive coefficient ρ is estimated from the final productivity series.
+The ACF procedure addresses the collinearity critique of OP/LP methods, where labor may be perfectly predicted by the control function in the first stage. Stage 1 runs OLS of log Value-Added on a third-degree polynomial in capital, labor, materials (Cost of Goods Sold), and time to recover fitted $\phi$ values. Stage 2 estimates (${\beta}_k$, ${\beta}_l$) jointly via GMM, using the moment conditions that the productivity innovation is orthogonal to capital (predetermined) and lagged labor (decided before the innovation). The productivity process is modeled as AR(1), and the autoregressive coefficient $\rho$ is estimated from the final productivity series.
 
-Standard errors are computed via a cluster bootstrap (50 iterations resampling firms), preserving the time-series structure within each firm. The bootstrap is run with bounded parameter estimates (β_k ∈ [0.01, 1.1], β_l ∈ [0.01, 1.5]) using L-BFGS-B optimization. Robust standard errors are reported using the interquartile range method.
+Standard errors are computed via a cluster bootstrap (50 iterations resampling firms), preserving the time-series structure within each firm. The bootstrap is run with bounded parameter estimates (${\beta}_k$ $\in$ [0.01, 1.1], ${\beta}_l$ $\in$ [0.01, 1.5]) using L-BFGS-B optimization. Robust standard errors are reported using the interquartile range method.
 
 **Output**: The final dataset includes firm-level TFP residuals (`ln_TFP`), estimated production function parameters, capital stock measures, and marginal products.
 
